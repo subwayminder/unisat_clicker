@@ -6,13 +6,14 @@ import random
 import csv
 import time
 import datetime
+import sys
 from src.gas_checker import check_gas
 from playwright.async_api import async_playwright, expect, Playwright, Page, BrowserContext
 from typing import TypedDict, List
 from loguru import logger
 from src.account_dto import AccountDTO
 from typing import Union
-from settings import ADS_API_URL, TX_COUNT_MIN, TX_COUNT_MAX, SLOW_MODE_VALUE, ACCOUNT_LATENCY_MIN, ACCOUNT_LATENCY_MAX, QUANTITY_THREADS
+from settings import ADS_API_URL, TX_COUNT_MIN, TX_COUNT_MAX, SLOW_MODE_VALUE, ACCOUNT_LATENCY_MIN, ACCOUNT_LATENCY_MAX, QUANTITY_THREADS, TEST_RUN
 from concurrent.futures import ProcessPoolExecutor
 
 @check_gas
@@ -66,7 +67,8 @@ async def unisat_script(ap: Playwright, account: AccountDTO):
     # Снова получаем страницу кошелька
     unisat_wallet_page = context.pages[-1]
     # Кнопка подписать и оплатить в кошельке
-    # await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[3]/div/div[2]').click()
+    if (not TEST_RUN):
+        await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[3]/div/div[2]').click()
     await asyncio.sleep(1)
     await unisat_page.close()
     await context.close()
@@ -153,10 +155,14 @@ def run_check_wrapper(account: AccountDTO):
 
 def main():
     logger.info(f"Старт")
+    if (not TEST_RUN):
+        if input('Внимание, это не тестовый запуск, продолжить? (y=Да, n=Нет) ') != 'y':
+            sys.exit()
     accounts = load_accounts()
     for i in range(int(TX_COUNT_MAX)):
         for account in accounts:
             if (account['tx_count'] > 0):
+                logger.info(f"[{account['public_address']}] Запуск минта")
                 asyncio.run(run(unisat_script, account))
                 account['tx_count'] -= 1
                 logger.info(f"[{account['public_address']}] Осталось транзакций - " + str(account['tx_count']))
