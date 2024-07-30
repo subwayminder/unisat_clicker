@@ -1,0 +1,7 @@
+.venv
+.pytest_cache/
+*.csv
+.vscode
+__pycache__/
+.env
+*.log
