@@ -66,8 +66,8 @@ async def unisat_script(ap: Playwright, account: AccountDTO):
     await unisat_page.locator('//*[@id="__next"]/div[3]/div[2]/div/div[9]/div[2]/div[2]/div/div/div[1]').click()
     # Снова получаем страницу кошелька
     unisat_wallet_page = context.pages[-1]
-    # Кнопка подписать и оплатить в кошельке
     if (not TEST_RUN):
+        # Кнопка подписать и оплатить в кошельке
         await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[3]/div/div[2]').click()
     await asyncio.sleep(1)
     await unisat_page.close()
