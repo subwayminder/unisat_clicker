@@ -126,15 +126,16 @@ def load_accounts() -> List[AccountDTO]:
         reader = csv.reader(csvfile, delimiter=';')
         next(reader, None)
         for row in reader:
-            accounts.append(
-                AccountDTO(**{
-                    'profile_id': row[0], 
-                    'password': row[1], 
-                    'tx_count': random.randint(int(TX_COUNT_MIN), int(TX_COUNT_MAX)),
-                    'public_address': row[2],
-                    'proxy': row[3]
-                })
-            )
+            if (int(row[4]) == 1):
+                accounts.append(
+                    AccountDTO(**{
+                        'profile_id': row[0], 
+                        'password': row[1], 
+                        'tx_count': random.randint(int(TX_COUNT_MIN), int(TX_COUNT_MAX)),
+                        'public_address': row[2],
+                        'proxy': row[3]
+                    })
+                )
     return accounts
 
 async def run(script, account: AccountDTO):
