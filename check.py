@@ -32,12 +32,14 @@ def run_check(address: str, proxy: str, number):
     r = requests.get(url=url + address + '/txs', headers=headers)
     if r.status_code == 200:
         body = r.json()
-        last_date = datetime.datetime.fromtimestamp(body[0]['status']['block_time']).strftime("%d.%m.%Y") if len(body) != 0 else 'Empty'
+        last_date = 'Empty'
+        if len(body) != 0:
+            last_date = datetime.datetime.fromtimestamp(body[0]['status']['block_time']).strftime("%d.%m.%Y")
         return [
             number, 
             address, 
             str(len(body)), 
-            
+            last_date
         ]
 
 def run_check_wrapper(account: AccountDTO):
