@@ -126,7 +126,7 @@ def load_accounts() -> List[AccountDTO]:
         reader = csv.reader(csvfile, delimiter=';')
         next(reader, None)
         for row in reader:
-            if (int(row[4]) == 1):
+            if (int(row[5]) == 1):
                 accounts.append(
                     AccountDTO(**{
                         'number': row[0],
