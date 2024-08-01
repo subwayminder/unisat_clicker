@@ -13,7 +13,7 @@ from typing import TypedDict, List
 from loguru import logger
 from src.account_dto import AccountDTO
 from typing import Union
-from settings import ADS_API_URL, TX_COUNT_MIN, TX_COUNT_MAX, SLOW_MODE_VALUE, ACCOUNT_LATENCY_MIN, ACCOUNT_LATENCY_MAX, QUANTITY_THREADS, TEST_RUN
+from settings import ADS_API_URL, TX_COUNT_MIN, TX_COUNT_MAX, SLOW_MODE_VALUE, ACCOUNT_LATENCY_MIN, ACCOUNT_LATENCY_MAX, QUANTITY_THREADS, TEST_RUN, ROUND_LATENCY
 from concurrent.futures import ProcessPoolExecutor
 
 @check_gas
@@ -171,6 +171,7 @@ def main():
                 pause_time = random.randint(int(ACCOUNT_LATENCY_MIN), int(ACCOUNT_LATENCY_MAX))
                 logger.info(f"Пауза " + str(pause_time) + " сек")
                 time.sleep(pause_time)
+        time,sleep(ROUND_LATENCY)
 
     # logger.info(f"Запуск чекера")
 
