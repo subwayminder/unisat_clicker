@@ -32,7 +32,7 @@ def run_check(address: str, proxy: str):
     r = requests.get(url=url + address + '/txs', headers=headers)
     if r.status_code == 200:
         body = r.json()
-        return [address, str(len(body))]
+        return [address, str(len(body)), datetime.datetime.fromtimestamp(body[0]['status']['block_time']).strftime("%d.%m.%Y_%H-%M-%S%z")]
 
 def run_check_wrapper(account: AccountDTO):
     return run_check(account.get('public_address'), account.get('proxy'))
@@ -45,7 +45,7 @@ def main():
 
     with open(datetime.datetime.now().strftime("%d.%m.%Y_%H-%M-%S%z") + '.log.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(["Public address", "Total txs"])
+        writer.writerow(["Public address", "Total txs", "Last tx date"])
         writer.writerows(row for row in res)
 
 
