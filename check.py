@@ -33,7 +33,7 @@ def run_check(address: str, proxy: str, number):
     if r.status_code == 200:
         body = r.json()
         last_date = 'Empty'
-        if len(body) != 0:
+        if body:
             last_date = datetime.datetime.fromtimestamp(body[0]['status']['block_time']).strftime("%d.%m.%Y")
         return [
             number, 
