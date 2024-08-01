@@ -129,11 +129,12 @@ def load_accounts() -> List[AccountDTO]:
             if (int(row[4]) == 1):
                 accounts.append(
                     AccountDTO(**{
-                        'profile_id': row[0], 
-                        'password': row[1], 
+                        'number': row[0],
+                        'profile_id': row[1], 
+                        'password': row[2], 
                         'tx_count': random.randint(int(TX_COUNT_MIN), int(TX_COUNT_MAX)),
-                        'public_address': row[2],
-                        'proxy': row[3]
+                        'public_address': row[3],
+                        'proxy': row[4]
                     })
                 )
     return accounts
@@ -142,17 +143,17 @@ async def run(script, account: AccountDTO):
     async with async_playwright() as playwright:
         await script(playwright, account)
 
-def run_check(address: str, proxy: str):
+def run_check(address: str, proxy: str, number):
     url = 'https://mempool.space/api/address/'
     headers = {}
     headers = {"proxy": f"http://{proxy}"}
     r = requests.get(url=url + address + '/txs', headers=headers)
     if r.status_code == 200:
         body = r.json()
-        return [address, str(len(body))]
+        return [number, address ,address, str(len(body)), datetime.datetime.fromtimestamp(body[0]['status']['block_time']).strftime("%d.%m.%Y")]
 
 def run_check_wrapper(account: AccountDTO):
-    return run_check(account.get('public_address'), account.get('proxy'))
+    return run_check(account.get('public_address'), account.get('proxy'), account.get('number'))
 
 def main():
     logger.info(f"Старт")
@@ -171,15 +172,15 @@ def main():
                 logger.info(f"Пауза " + str(pause_time) + " сек")
                 time.sleep(pause_time)
 
-    logger.info(f"Запуск чекера")
+    # logger.info(f"Запуск чекера")
 
-    with ProcessPoolExecutor(max_workers=QUANTITY_THREADS) as executor:
-        res = list(executor.map(run_check_wrapper, accounts))
+    # with ProcessPoolExecutor(max_workers=QUANTITY_THREADS) as executor:
+    #     res = list(executor.map(run_check_wrapper, accounts))
 
-    with open(datetime.datetime.now().strftime("%d.%m.%Y_%H-%M-%S%z") + '.log.csv', 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(["Public address", "Total txs"])
-        writer.writerows(row for row in res)
+    # with open(datetime.datetime.now().strftime("%d.%m.%Y_%H-%M-%S%z") + '.log.csv', 'w', newline='') as csvfile:
+    #     writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    #     writer.writerow(["Public address", "Total txs"])
+    #     writer.writerows(row for row in res)
 
     logger.info(f"Конец выполнения")
 
