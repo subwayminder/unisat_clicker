@@ -13,17 +13,16 @@ def load_accounts() -> List[AccountDTO]:
         reader = csv.reader(csvfile, delimiter=';')
         next(reader, None)
         for row in reader:
-            if (int(row[5]) == 1):
-                accounts.append(
-                    AccountDTO(**{
-                        'number': row[0],
-                        'profile_id': row[1], 
-                        'password': row[2], 
-                        'tx_count': random.randint(int(TX_COUNT_MIN), int(TX_COUNT_MAX)),
-                        'public_address': row[3],
-                        'proxy': row[4]
-                    })
-                )
+            accounts.append(
+                AccountDTO(**{
+                    'number': row[0],
+                    'profile_id': row[1], 
+                    'password': row[2], 
+                    'tx_count': random.randint(int(TX_COUNT_MIN), int(TX_COUNT_MAX)),
+                    'public_address': row[3],
+                    'proxy': row[4]
+                })
+            )
     return accounts
 
 def run_check(address: str, proxy: str, number):
