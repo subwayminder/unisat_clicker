@@ -2,7 +2,6 @@ from loguru import logger
 from settings import RETRY_COUNT
 from src.sleeping import sleep
 
-
 def retry(func):
     async def wrapper(*args, **kwargs):
         retries = 0
