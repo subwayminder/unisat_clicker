@@ -13,5 +13,6 @@ ACCOUNT_LATENCY_MIN = os.environ.get("ACCOUNT_LATENCY_MIN")
 ACCOUNT_LATENCY_MAX = os.environ.get("ACCOUNT_LATENCY_MAX")
 ROUND_LATENCY = int(os.environ.get("ROUND_LATENCY"))
 QUANTITY_THREADS = int(os.environ.get("QUANTITY_THREADS"))
+RETRY_COUNT = int(os.environ.get("RETRY_COUNT"))
 MAX_GWEI = float(os.environ.get("MAX_GWEI"))
 TEST_RUN = str.lower(os.environ.get("TEST_RUN")) == 'true'
