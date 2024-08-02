@@ -7,6 +7,7 @@ import csv
 import time
 import datetime
 import sys
+from src.retry import retry
 from src.gas_checker import check_gas
 from playwright.async_api import async_playwright, expect, Playwright, Page, BrowserContext
 from typing import TypedDict, List
@@ -17,6 +18,7 @@ from settings import ADS_API_URL, TX_COUNT_MIN, TX_COUNT_MAX, SLOW_MODE_VALUE, A
 from concurrent.futures import ProcessPoolExecutor
 
 @check_gas
+@retry
 async def unisat_script(ap: Playwright, account: AccountDTO):
     unisat_url = 'https://unisat.io/runes/inscribe'
     mint_list = requests.get('https://api.unisat.space/query-v4/runes/info-list?rune=&start=0&limit=10&complete=no&sort=sixHourMints').json()['data']['detail']
