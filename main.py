@@ -173,7 +173,7 @@ def main():
                 pause_time = random.randint(int(ACCOUNT_LATENCY_MIN), int(ACCOUNT_LATENCY_MAX))
                 logger.info(f"Пауза " + str(pause_time) + " сек")
                 time.sleep(pause_time)
-        time,sleep(ROUND_LATENCY)
+        time.sleep(ROUND_LATENCY)
 
     # logger.info(f"Запуск чекера")
 
