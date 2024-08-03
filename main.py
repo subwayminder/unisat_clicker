@@ -25,7 +25,7 @@ async def unisat_script(ap: Playwright, account: AccountDTO):
         unisat_url = 'https://unisat.io/runes/inscribe'
         mint_list = requests.get('https://api.unisat.space/query-v4/runes/info-list?rune=&start=0&limit=10&complete=no&sort=sixHourMints').json()['data']['detail']
         random_rune = random.choice(mint_list)
-        context = open_profile(ap, account)
+        context = await open_profile(ap, account)
 
         # Переход на страницу случайной руны
         unisat_page = await context.new_page()
