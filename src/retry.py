@@ -1,5 +1,5 @@
 from loguru import logger
-from settings import RETRY_COUNT
+from settings import RETRY_COUNT, RETRY_TIMEOUT_MIN, RETRY_TIMEOUT_MAX
 from src.sleeping import sleep
 
 def retry(func):
@@ -11,7 +11,7 @@ def retry(func):
                 return result
             except Exception as e:
                 logger.error(f"Error | {e}")
-                await sleep(10, 20)
+                await sleep(RETRY_TIMEOUT_MIN, RETRY_TIMEOUT_MAX)
                 retries += 1
 
     return wrapper
