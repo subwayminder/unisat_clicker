@@ -2,6 +2,7 @@ import csv
 import random
 import requests
 import datetime
+import os
 from concurrent.futures import ProcessPoolExecutor
 from src.account_dto import AccountDTO
 from typing import List
@@ -32,8 +33,8 @@ def run_check(address: str, proxy: str, number):
     r = requests.get(url=url + address + '/txs', headers=headers)
     if r.status_code == 200:
         body = r.json()
-        last_date = 'Empty'
-        if body:
+        last_date = 'No data'
+        if (bool(body) & ('block_time' in body[0]['status'])):
             last_date = datetime.datetime.fromtimestamp(body[0]['status']['block_time']).strftime("%d.%m.%Y")
         return [
             number, 
@@ -51,7 +52,13 @@ def main():
     with ProcessPoolExecutor(max_workers=QUANTITY_THREADS) as executor:
         res = list(executor.map(run_check_wrapper, accounts))
 
-    with open(datetime.datetime.now().strftime("%d.%m.%Y_%H-%M-%S%z") + '.log.csv', 'w', newline='') as csvfile:
+    dirname = os.path.dirname(__file__)
+    dirname = os.path.join(dirname, 'logs')
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    filepath = os.path.join(dirname, datetime.datetime.now().strftime("%d.%m.%Y_%H-%M-%S%z") + '.log.csv')
+
+    with open(filepath, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(["Number", "Public address", "Total txs", "Last tx date"])
         writer.writerows(row for row in res)

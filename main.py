@@ -7,6 +7,7 @@ import csv
 import time
 import datetime
 import sys
+import os
 from src.retry import retry
 from src.gas_checker import check_gas
 from playwright.async_api import async_playwright, expect, Playwright, Page, BrowserContext
@@ -189,5 +190,10 @@ def main():
     logger.info(f"Конец выполнения")
 
 if (__name__ == '__main__'):
-    logger.add(datetime.datetime.now().strftime("%d.%m.%Y_%H-%M-%S%z") + ".logging.log")
+    dirname = os.path.dirname(__file__)
+    dirname = os.path.join(dirname, 'logs')
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    filepath = os.path.join(dirname, datetime.datetime.now().strftime("%d.%m.%Y_%H-%M-%S%z") + '.logging.log')
+    logger.add(filepath)
     main()
