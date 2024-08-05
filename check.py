@@ -40,9 +40,9 @@ def run_check(address: str, proxy: str, number):
         body_data = r_data.json()
         body_price = r_price.json()
         last_date = 'No data'
-        if (bool(body)):
-            for tx in enumerate(body, start=0):
-                if ('status' in tx):
+        if (body):
+            for tx in body:
+                if ('status' in tx) and ('block_time' in tx['status']):
                     last_date = datetime.datetime.fromtimestamp(tx['status']['block_time']).strftime("%d.%m.%Y")
                     break
 
