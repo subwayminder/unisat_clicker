@@ -3,6 +3,7 @@ import random
 import requests
 import datetime
 import os
+import time
 from concurrent.futures import ProcessPoolExecutor
 from src.account_dto import AccountDTO
 from typing import List
@@ -28,18 +29,31 @@ def load_accounts() -> List[AccountDTO]:
 
 def run_check(address: str, proxy: str, number):
     url = 'https://mempool.space/api/address/'
+    url_price = 'https://mempool.space/api/v1/prices'
     headers = {}
     headers = {"proxy": f"http://{proxy}"}
-    r = requests.get(url=url + address + '/txs', headers=headers)
-    if r.status_code == 200:
-        body = r.json()
+    r_tx = requests.get(url=url + address + '/txs', headers=headers)
+    r_data = requests.get(url=url + address, headers=headers)
+    r_price = requests.get(url=url_price, headers=headers)
+    if (r_tx.status_code == 200) & (r_data.status_code == 200) & (r_price.status_code == 200):
+        body = r_tx.json()
+        body_data = r_data.json()
+        body_price = r_price.json()
         last_date = 'No data'
-        if (bool(body) & ('block_time' in body[0]['status'])):
-            last_date = datetime.datetime.fromtimestamp(body[0]['status']['block_time']).strftime("%d.%m.%Y")
+        if (bool(body)):
+            for tx in enumerate(body, start=0):
+                if ('status' in tx):
+                    last_date = datetime.datetime.fromtimestamp(tx['status']['block_time']).strftime("%d.%m.%Y")
+                    break
+
+        btc_balance = (int(body_data['chain_stats']['funded_txo_sum']) - int(body_data['chain_stats']['spent_txo_sum'])) / 100000000
+        usd_balance = round(btc_balance * body_price['USD'], 2)
         return [
             number, 
             address, 
             str(len(body)), 
+            btc_balance,
+            usd_balance,
             last_date
         ]
 
@@ -60,7 +74,7 @@ def main():
 
     with open(filepath, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(["Number", "Public address", "Total txs", "Last tx date"])
+        writer.writerow(["Number", "Public address", "Total txs", "BTC balance", "USD balance", "Last tx date"])
         writer.writerows(row for row in res)
 
 
