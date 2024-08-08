@@ -4,10 +4,13 @@ import requests
 import datetime
 import os
 import time
+import asyncio
+from loguru import logger
 from concurrent.futures import ProcessPoolExecutor
 from src.account_dto import AccountDTO
 from typing import List
 from settings import TX_COUNT_MIN, TX_COUNT_MAX, QUANTITY_THREADS
+from src.retry import retry
 
 def load_accounts() -> List[AccountDTO]:
     accounts = []
@@ -27,13 +30,17 @@ def load_accounts() -> List[AccountDTO]:
             )
     return accounts
 
-def run_check(address: str, proxy: str, number):
+@retry
+async def run_check(address: str, proxy: str, number):
+    logger.info("Start address: " + address)
     url = 'https://mempool.space/api/address/'
     url_price = 'https://mempool.space/api/v1/prices'
     headers = {}
     headers = {"proxy": f"http://{proxy}"}
     r_tx = requests.get(url=url + address + '/txs', headers=headers)
+    time.sleep(2)
     r_data = requests.get(url=url + address, headers=headers)
+    time.sleep(2)
     r_price = requests.get(url=url_price, headers=headers)
     if (r_tx.status_code == 200) & (r_data.status_code == 200) & (r_price.status_code == 200):
         body = r_tx.json()
@@ -58,7 +65,7 @@ def run_check(address: str, proxy: str, number):
         ]
 
 def run_check_wrapper(account: AccountDTO):
-    return run_check(account.get('public_address'), account.get('proxy'), account.get('number'))
+    return asyncio.run(run_check(account.get('public_address'), account.get('proxy'), account.get('number')))
 
 def main():
     accounts = load_accounts()
