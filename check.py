@@ -40,6 +40,7 @@ async def run_check(address: str, proxy: str, usd_price: int, number):
     r_tx = requests.get(url=url + address + '/txs', headers=headers)
     time.sleep(2)
     r_data = requests.get(url=url + address, headers=headers)
+    time.sleep(2)
     if (r_tx.status_code == 200) & (r_data.status_code == 200):
         body = r_tx.json()
         body_data = r_data.json()
