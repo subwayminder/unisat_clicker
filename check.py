@@ -60,6 +60,8 @@ async def run_check(address: str, proxy: str, usd_price: int, number):
             usd_balance,
             last_date
         ]
+    else:
+        raise RuntimeError
 
 def run_check_wrapper(account: AccountDTO):
     return asyncio.run(run_check(account.get('public_address'), account.get('proxy'), account.get('usd_price'), account.get('number')))
