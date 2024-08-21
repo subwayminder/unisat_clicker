@@ -79,6 +79,7 @@ async def unisat_script(ap: Playwright, account: AccountDTO):
         if ('unisat_page' in locals()):
             await unisat_page.close()
         requests.get(ADS_API_URL + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
+        account['tx_count'] -= 1
         await asyncio.sleep(1)
 
 async def wallet_login(unisat_page: Page, seed_phrase: List[str], password: str):
@@ -170,22 +171,11 @@ def main():
             if (account['tx_count'] > 0):
                 logger.info(f"[{account['public_address']}] Запуск минта")
                 asyncio.run(run(unisat_script, account))
-                account['tx_count'] -= 1
                 logger.info(f"[{account['public_address']}] Осталось транзакций - " + str(account['tx_count']))
                 pause_time = random.randint(int(ACCOUNT_LATENCY_MIN), int(ACCOUNT_LATENCY_MAX))
                 logger.info(f"Пауза " + str(pause_time) + " сек")
                 time.sleep(pause_time)
         time.sleep(ROUND_LATENCY)
-
-    # logger.info(f"Запуск чекера")
-
-    # with ProcessPoolExecutor(max_workers=QUANTITY_THREADS) as executor:
-    #     res = list(executor.map(run_check_wrapper, accounts))
-
-    # with open(datetime.datetime.now().strftime("%d.%m.%Y_%H-%M-%S%z") + '.log.csv', 'w', newline='') as csvfile:
-    #     writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    #     writer.writerow(["Public address", "Total txs"])
-    #     writer.writerows(row for row in res)
 
     logger.info(f"Конец выполнения")
 

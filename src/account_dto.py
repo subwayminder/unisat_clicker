@@ -8,3 +8,4 @@ class AccountDTO(TypedDict):
    tx_count: int
    public_address: str
    proxy: str
+   usd_price: Union[int, None]
