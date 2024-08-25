@@ -8,6 +8,9 @@ import time
 import datetime
 import sys
 import os
+import string
+import questionary
+from questionary import Separator, Choice
 from src.retry import retry
 from src.gas_checker import check_gas
 from playwright.async_api import async_playwright, expect, Playwright, Page, BrowserContext
@@ -15,7 +18,7 @@ from typing import TypedDict, List
 from loguru import logger
 from src.account_dto import AccountDTO
 from typing import Union
-from settings import ADS_API_URL, TX_COUNT_MIN, TX_COUNT_MAX, SLOW_MODE_VALUE, ACCOUNT_LATENCY_MIN, ACCOUNT_LATENCY_MAX, QUANTITY_THREADS, TEST_RUN, ROUND_LATENCY
+from settings import ADS_API_URL, TX_COUNT_MIN, TX_COUNT_MAX, SLOW_MODE_VALUE, ACCOUNT_LATENCY_MIN, ACCOUNT_LATENCY_MAX, QUANTITY_THREADS, TEST_RUN, ROUND_LATENCY, DOMAIN_LENGHT_FROM, DOMAIN_LENGHT_TO
 from concurrent.futures import ProcessPoolExecutor
 from src.functions import open_profile
 
@@ -70,8 +73,7 @@ async def unisat_script(ap: Playwright, account: AccountDTO):
         # Снова получаем страницу кошелька
         unisat_wallet_page = context.pages[-1]
         if (not TEST_RUN):
-            # Кнопка подписать и оплатить в кошельке
-            await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[3]/div/div[2]').click()
+            await sign_tx(unisat_wallet_page)
     except Exception as e:
         raise e
     finally:
@@ -81,6 +83,85 @@ async def unisat_script(ap: Playwright, account: AccountDTO):
         requests.get(ADS_API_URL + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
         account['tx_count'] -= 1
         await asyncio.sleep(1)
+
+def generate_string(size=6, chars=string.ascii_letters + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+@check_gas
+async def sign_tx(unisat_wallet_page: Page):
+    # Кнопка подписать и оплатить в кошельке
+    await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[3]/div/div[2]').click()
+
+@check_gas
+@retry
+async def ordinals_names(ap: Playwright, account: AccountDTO):
+    try:
+        ordinals_names_url = 'https://unisat.io/inscribe'
+        context = await open_profile(ap, account)
+
+        # Переход на страницу с ординалами
+        unisat_page = await context.new_page()
+        await unisat_page.bring_to_front()
+        await unisat_page.goto(ordinals_names_url)
+        # Логин через кошелек, клик sign
+        await unisat_page.locator('//*[@id="__next"]/div[1]/div[2]/div[3]').click()
+        await unisat_page.locator('//*[@id="__next"]/div[5]/div/div[3]/div[1]').click()
+        await asyncio.sleep(5)
+        unisat_wallet_page = context.pages[-1]
+        try:
+            await unlock_wallet(unisat_wallet_page, account.get('password'))
+        except:
+            pass
+        await asyncio.sleep(5)
+        unisat_wallet_page = context.pages[-1]
+        await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[2]/div/div[2]').click()
+        # Выбираем имена на .unisat домене
+        await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[3]/div[1]/div[2]/div').click()
+        await unisat_page.locator('//html/body/div[2]/div/div[2]/div/div/div/div/div[2]').click()
+        # Генерируем случайный домен
+        name = generate_string(size=random.randint(int(DOMAIN_LENGHT_FROM), int(DOMAIN_LENGHT_TO)))
+        # Вставляем его в текстовое поле, нажимаем далее
+        await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div/textarea').fill(name)
+        await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div/div[3]').click()
+        await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div/div[5]/div[2]').click()
+        # Выбираем эконом
+        await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[5]/div[2]/div[1]').click()
+        await unisat_page.wait_for_load_state()
+        # Клик по селекту
+        await asyncio.sleep(2)
+        await unisat_page.locator('//*[@id="rc-tabs-1-panel-single"]/div/div/span[1]').click()
+        # Клик по опции
+        await unisat_page.locator('//html/body/div[3]/div').click()
+        await asyncio.sleep(1)
+        # Нажимаем Submit & Pay
+        await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[8]/div').click()
+        await unisat_page.wait_for_load_state()
+        await unisat_page.locator('//*[@id="__next"]/div[3]/div[2]/div/div[9]/div[2]/div[2]/div/div/div[1]').click()
+
+        # Снова получаем страницу кошелька
+        unisat_wallet_page = context.pages[-1]
+        if (not TEST_RUN):
+            # Кнопка подписать и оплатить в кошельке
+            await sign_tx(unisat_wallet_page)
+
+        if ('unisat_page' in locals()):
+            await unisat_page.close()
+        requests.get(ADS_API_URL + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
+        account['tx_count'] -= 1
+        await asyncio.sleep(1)
+
+    except Exception as e:
+        raise e
+
+    finally:
+        await asyncio.sleep(1)
+        if ('unisat_page' in locals()):
+            await unisat_page.close()
+        requests.get(ADS_API_URL + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
+        account['tx_count'] -= 1
+        await asyncio.sleep(1)
+    
+
 
 async def wallet_login(unisat_page: Page, seed_phrase: List[str], password: str):
     await unisat_page.bring_to_front()
@@ -160,17 +241,34 @@ def run_check(address: str, proxy: str, number):
 def run_check_wrapper(account: AccountDTO):
     return run_check(account.get('public_address'), account.get('proxy'), account.get('number'))
 
+def choose_script():
+    result = questionary.select(
+        "Выбор опций",
+        choices=[
+            Separator(" - 1-я неделя"),
+            Choice("Mint Runes", unisat_script),
+            Choice("Ordinals - Names", ordinals_names),
+        ],
+        qmark="⚙️ ",
+        pointer="✅ "
+    ).ask()
+    if result == "exit":
+        print("Bye")
+        sys.exit()
+    return result
+
 def main():
     logger.info(f"Старт")
     if (not TEST_RUN):
         if input('Внимание, это не тестовый запуск, продолжить? (y=Да, n=Нет) ') != 'y':
             sys.exit()
     accounts = load_accounts()
+    script = choose_script()
     for i in range(int(TX_COUNT_MAX)):
         for account in accounts:
             if (account['tx_count'] > 0):
                 logger.info(f"[{account['public_address']}] Запуск минта")
-                asyncio.run(run(unisat_script, account))
+                asyncio.run(run(script, account))
                 logger.info(f"[{account['public_address']}] Осталось транзакций - " + str(account['tx_count']))
                 pause_time = random.randint(int(ACCOUNT_LATENCY_MIN), int(ACCOUNT_LATENCY_MAX))
                 logger.info(f"Пауза " + str(pause_time) + " сек")

@@ -18,3 +18,5 @@ MAX_GWEI = float(os.environ.get("MAX_GWEI"))
 TEST_RUN = str.lower(os.environ.get("TEST_RUN")) == 'true'
 RETRY_TIMEOUT_MIN = int(os.environ.get("RETRY_TIMEOUT_MIN"))
 RETRY_TIMEOUT_MAX = int(os.environ.get("RETRY_TIMEOUT_MAX"))
+DOMAIN_LENGHT_FROM = int(os.environ.get("DOMAIN_LENGHT_FROM"))
+DOMAIN_LENGHT_TO = int(os.environ.get("DOMAIN_LENGHT_TO"))
