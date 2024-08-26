@@ -223,19 +223,20 @@ async def ordinals_bytes(ap: Playwright, account: AccountDTO):
 
         # Клик на сабмит
         await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[8]/div/span').click()
+        await unisat_page.wait_for_load_state()
 
         # Клик на оплату
-        await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[8]/div').click()
+        await unisat_page.locator('//*[@id="__next"]/div[3]/div[2]/div/div[9]/div[2]/div[2]/div/div').click()
 
         # Снова получаем страницу кошелька
-        unisat_wallet_page = context.pages[-1]
+        unisat_wallet_page = get_wallet_page(context)
         if (not TEST_RUN):
             # Кнопка подписать и оплатить в кошельке
             await sign_tx(unisat_wallet_page)
 
     except Exception as e:
         raise e
-        
+
     finally:
         await asyncio.sleep(1)
         if ('unisat_page' in locals()):
