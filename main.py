@@ -354,6 +354,7 @@ def main():
     accounts = load_accounts()
     script = choose_script()
     for i in range(int(TX_COUNT_MAX)):
+        random.shuffle(accounts)
         for account in accounts:
             if (account['tx_count'] > 0):
                 logger.info(f"[{account['public_address']}] Запуск минта")
