@@ -4,8 +4,9 @@ import random
 import requests
 from settings import MAX_GWEI
 from loguru import logger
+from src.retry import retry
 
-
+@retry
 async def get_gas():
     try:
         response = requests.get('https://mempool.space/api/v1/fees/recommended').json()
@@ -27,7 +28,6 @@ async def wait_gas():
         else:
             logger.success(f"Комиссия в норме: {gas} < {MAX_GWEI}")
             break
-
 
 def check_gas(func):
     async def _wrapper(*args, **kwargs):
