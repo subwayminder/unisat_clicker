@@ -3,7 +3,6 @@ import asyncio
 import sys
 import requests
 import random
-import csv
 import time
 import datetime
 import sys
@@ -16,10 +15,9 @@ from src.gas_checker import check_gas
 from playwright.async_api import async_playwright, expect, Playwright, Page, BrowserContext
 from typing import TypedDict, List
 from loguru import logger
-from src.account_dto import AccountDTO
-from typing import Union
-from settings import ADS_API_URL, TX_COUNT_MIN, TX_COUNT_MAX, SLOW_MODE_VALUE, ACCOUNT_LATENCY_MIN, ACCOUNT_LATENCY_MAX, QUANTITY_THREADS, TEST_RUN, ROUND_LATENCY, DOMAIN_LENGHT_FROM, DOMAIN_LENGHT_TO
-from concurrent.futures import ProcessPoolExecutor
+from src.checker import start_checker
+from src.account import AccountDTO, load_accounts
+from settings import ADS_API_URL, TX_COUNT_MAX, SLOW_MODE_VALUE, ACCOUNT_LATENCY_MIN, ACCOUNT_LATENCY_MAX, QUANTITY_THREADS, TEST_RUN, ROUND_LATENCY, DOMAIN_LENGHT_FROM, DOMAIN_LENGHT_TO
 from src.functions import open_profile
 
 @check_gas
@@ -294,49 +292,18 @@ def get_wallet_page(context: BrowserContext):
         unisat_wallet_page = context.pages[-1]
     return unisat_wallet_page
 
-def load_accounts() -> List[AccountDTO]:
-    accounts = []
-    with open('import.csv', newline='') as csvfile:
-        reader = csv.reader(csvfile, delimiter=';')
-        next(reader, None)
-        for row in reader:
-            if (int(row[5]) == 1):
-                accounts.append(
-                    AccountDTO(**{
-                        'number': row[0],
-                        'profile_id': row[1], 
-                        'password': row[2], 
-                        'tx_count': random.randint(int(TX_COUNT_MIN), int(TX_COUNT_MAX)),
-                        'public_address': row[3],
-                        'proxy': row[4]
-                    })
-                )
-    return accounts
-
 async def run(script, account: AccountDTO):
     async with async_playwright() as playwright:
         await script(playwright, account)
 
-def run_check(address: str, proxy: str, number):
-    url = 'https://mempool.space/api/address/'
-    headers = {}
-    headers = {"proxy": f"http://{proxy}"}
-    r = requests.get(url=url + address + '/txs', headers=headers)
-    if r.status_code == 200:
-        body = r.json()
-        return [number, address ,address, str(len(body)), datetime.datetime.fromtimestamp(body[0]['status']['block_time']).strftime("%d.%m.%Y")]
-
-def run_check_wrapper(account: AccountDTO):
-    return run_check(account.get('public_address'), account.get('proxy'), account.get('number'))
-
 def choose_script():
     result = questionary.select(
-        "Выбор опций",
+        "Choose option:",
         choices=[
-            Separator(" - 1-я неделя"),
             Choice("Mint Runes", unisat_script),
             Choice("Ordinals - Names", ordinals_names),
             Choice("Ordinals - Bytes Deploy", ordinals_bytes),
+            Choice("Exit", 'exit'),
         ],
         qmark="⚙️ ",
         pointer="✅ "
@@ -347,12 +314,13 @@ def choose_script():
     return result
 
 def main():
-    logger.info(f"Старт")
+    logger.info(f"Start")
     if (not TEST_RUN):
-        if input('Внимание, это не тестовый запуск, продолжить? (y=Да, n=Нет) ') != 'y':
+        if input('Attention, this is not a test run, continue? (y=Yes, n=No) ') != 'y':
             sys.exit()
     accounts = load_accounts()
     script = choose_script()
+
     for i in range(int(TX_COUNT_MAX)):
         random.shuffle(accounts)
         for account in accounts:

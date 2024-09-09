@@ -1,7 +1,7 @@
 import requests
 from settings import ADS_API_URL, SLOW_MODE_VALUE
 from playwright.async_api import async_playwright, expect, Playwright, Page, BrowserContext
-from src.account_dto import AccountDTO
+from src.account import AccountDTO
 
 async def open_profile(ap: Playwright, account: AccountDTO) -> BrowserContext:
     ads_api_response = requests.get(ADS_API_URL + '/api/v1/browser/start?user_id=' + account.get('profile_id')).json()
