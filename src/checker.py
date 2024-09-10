@@ -55,8 +55,8 @@ class Checker:
             btc_balance,
             usd_balance,
             last_date,
-            fb_data['data']['balance'],
-            fb_data['data']['available']
+            fb_data['data']['balance'] / 100000000,
+            fb_data['data']['available'] / 100000000
         ]
 
     def run_check_wrapper(account: AccountDTO):
@@ -75,7 +75,7 @@ def start_checker():
     with ProcessPoolExecutor(max_workers=QUANTITY_THREADS) as executor:
         res = list(executor.map(Checker.run_check_wrapper, accounts))
 
-    dirname = os.path.dirname(__file__)
+    dirname = os.path.dirname(os.path.dirname(__file__))
     dirname = os.path.join(dirname, 'logs')
     if not os.path.exists(dirname):
         os.makedirs(dirname)
