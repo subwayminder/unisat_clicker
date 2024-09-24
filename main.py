@@ -41,7 +41,7 @@ async def unisat_script(ap: Playwright, account: AccountDTO):
         await next_button.click()
 
         # Логин через кошелек, клик sign
-        sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
+        await sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
 
         # Выбираем минимальный газ
         await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[3]/div[2]/div/div[5]/div[2]/div[1]').click()
@@ -73,7 +73,7 @@ async def unisat_script(ap: Playwright, account: AccountDTO):
 
         # Клик на оплату
         await unisat_page.locator('//*[@id="__next"]/div[3]/div[2]/div/div[9]/div[2]/div[2]/div/div/div[1]').click()
-        
+
         # Снова получаем страницу кошелька
         unisat_wallet_page = context.pages[-1]
         if (not TEST_RUN):
@@ -109,7 +109,7 @@ async def ordinals_names(ap: Playwright, account: AccountDTO):
         await unisat_page.goto(ordinals_names_url)
 
         # Логин через кошелек, клик sign
-        sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
+        await sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
 
         # Выбираем имена на .unisat домене
         await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[3]/div[1]/div[2]/div').click()
@@ -179,7 +179,7 @@ async def ordinals_bytes(ap: Playwright, account: AccountDTO):
         await unisat_page.bring_to_front()
         await unisat_page.goto(ordinals_names_url)
         # Логин через кошелек, клик sign
-        sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
+        await sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
 
         # Выбираем деплой 5 байт
         await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[1]/div[1]/div[4]/div[2]/div[1]').click()
