@@ -292,7 +292,7 @@ async def sign_with_wallet(unisat_page: Page, context: BrowserContext, account: 
 
     # Переключаем сеть если нужно
     try:
-        unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[3]/div/div[2]').click(timeout=1500)
+        await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[3]/div/div[2]').click(timeout=1500)
     except:
         pass
     await asyncio.sleep(5)
