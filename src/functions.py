@@ -1,10 +1,32 @@
-import requests
-from settings import ADS_API_URL, SLOW_MODE_VALUE
-from playwright.async_api import async_playwright, expect, Playwright, Page, BrowserContext
+from src.coinex import CoinEx
+from src.gas_checker import check_fractal_gas
+from src.retry import retry
 from src.account import AccountDTO
+from settings import COINEX_ACCESS_ID, COINEX_SECRET
+from loguru import logger
+import ccxt.async_support as ccxt
 
-async def open_profile(ap: Playwright, account: AccountDTO) -> BrowserContext:
-    ads_api_response = requests.get(ADS_API_URL + '/api/v1/browser/start?user_id=' + account.get('profile_id')).json()
-    browser = await ap.chromium.connect_over_cdp(ads_api_response['data']['ws']['puppeteer'], slow_mo=int(SLOW_MODE_VALUE))
-    context = browser.contexts[0]
-    return context
+
+@check_fractal_gas
+@retry
+async def withdraw(account: AccountDTO):
+    logger.info(f"[{account.get('public_address')}] Начинаем вывод {account.get('withdraw_amount')} FB")
+
+    try:
+        coinex = CoinEx(account, COINEX_ACCESS_ID, COINEX_SECRET)
+
+        response = await coinex.submitWithdraw()
+        resp_info = response['info']
+
+        explorer = resp_info['explorer_address_url']
+        amount = resp_info['amount']
+        fees = resp_info['fee_amount']
+        actual_amount = resp_info['actual_amount']
+        logger.info(f"[{account.get('public_address')}] | Withdraw {actual_amount} FB ({amount} (cost) - {fees} (fees)) to {account.get('public_address')} | {explorer}")
+    except ccxt.ExchangeError as e:
+        raise e
+    except Exception as e:
+        raise e
+    finally:
+        if coinex:
+            await coinex.exchange.close()
