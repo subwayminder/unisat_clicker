@@ -9,7 +9,7 @@ import questionary
 from questionary import Separator, Choice
 from src.account import AccountDTO, load_accounts
 from settings import TX_COUNT_MAX, ACCOUNT_LATENCY_MIN, ACCOUNT_LATENCY_MAX, TEST_RUN, ROUND_LATENCY
-from src.playwright import unisat_script, ordinals_names, ordinals_bytes
+from src.playwright import unisat_script, ordinals_names, ordinals_bytes, fractal_mint
 from loguru import logger
 from src.functions import withdraw
 
@@ -29,6 +29,7 @@ def choose_script():
             Choice("Mint Runes", unisat_script),
             Choice("Ordinals - Names", ordinals_names),
             Choice("Ordinals - Bytes Deploy", ordinals_bytes),
+            Choice("Fractal mint", fractal_mint),
             Separator(''),
             Choice("Exit", 'exit'),
         ],
