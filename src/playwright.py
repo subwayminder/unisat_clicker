@@ -242,14 +242,23 @@ async def fractal_mint(account: AccountDTO):
     async with async_playwright() as ap:
         try:
             context = await open_profile(ap, account)
-            mint_list = requests.get('https://fractal-api.unisat.io/query-v4/brc20_5byte/brc20/status?start=0&limit=20&complete=no&sort=holders&tick_filter=24&ticker=').json()['data']['detail']
-            random_rune = random.choice(mint_list)
-
-            # Переход на страницу случайной руны
             unisat_page = await context.new_page()
             await unisat_page.bring_to_front()
-            await unisat_page.goto('https://fractal.unisat.io/inscribe?tick=' + random_rune['ticker'])
+            await unisat_page.goto('https://fractal.unisat.io/explorer/brc20')
             await unisat_page.wait_for_load_state()
+
+            # Переход на страницу случайной руны
+            await unisat_page.locator('//*[@id="__next"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/label[2]/div').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[2]/div/div/div/div/div[3]/div/div/div[4]').first.click()
+            await asyncio.sleep(5)
+            mint_collection = await unisat_page.locator("span:has-text('Mint')").all()
+            count = await mint_collection.count()
+            index = random.randint(0, count - 1)
+            await mint_collection[index].click()
+            await unisat_page.wait_for_load_state()
+
+
+            # await unisat_page.goto('https://fractal.unisat.io/inscribe?tick=' + random_rune['ticker'])
 
             # Логин через кошелек, клик sign
             await sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
