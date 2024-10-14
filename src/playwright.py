@@ -268,8 +268,8 @@ async def fractal_mint(account: AccountDTO):
             await repeat_rune_input.fill('50')
 
             # Жмем далее
-            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div[2]/div[4]/div[2]/input').first.click()
-            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div/div[5]/div[2]').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div[3]/div/div').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div/div[4]/div[2]').first.click()
 
             # Скипаем алерт если он появился
             try:
