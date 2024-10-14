@@ -252,7 +252,7 @@ async def fractal_mint(account: AccountDTO):
             await unisat_page.locator('//*[@id="__next"]/div[2]/div/div/div/div/div[3]/div/div/div[4]').first.click()
             await asyncio.sleep(5)
             mint_collection = await unisat_page.locator("span:has-text('Mint')").all()
-            count = await mint_collection.count()
+            count = await unisat_page.locator("span:has-text('Mint')").count()
             index = random.randint(0, count - 1)
             await mint_collection[index].click()
             await unisat_page.wait_for_load_state()
