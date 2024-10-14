@@ -261,7 +261,7 @@ async def fractal_mint(account: AccountDTO):
             # await unisat_page.goto('https://fractal.unisat.io/inscribe?tick=' + random_rune['ticker'])
 
             # Логин через кошелек, клик sign
-            await sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
+            await sign_with_wallet_fractal(context=context, unisat_page=unisat_page, account=account)
 
             # Ставим repeat 50
             repeat_rune_input = unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div[2]/div[4]/div[2]/input').first
@@ -356,6 +356,30 @@ async def sign_with_wallet(unisat_page: Page, context: BrowserContext, account: 
     # Логин через кошелек, клик sign
     await unisat_page.locator('//*[@id="__next"]/div[1]/div[2]/div[3]').click()
     await unisat_page.locator('//*[@id="__next"]/div[5]/div/div[3]/div[1]').click()
+    await asyncio.sleep(5)
+    unisat_wallet_page = context.pages[-1]
+    # Пробуем разблокировать кошелек, скип если уже разблокирован
+    try:
+        await unlock_wallet(unisat_wallet_page, account.get('password'))
+    except:
+        pass
+    await asyncio.sleep(5)
+    unisat_wallet_page = context.pages[-1]
+
+    # Переключаем сеть если нужно
+    try:
+        await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[3]/div/div[2]').click(timeout=1500)
+    except:
+        pass
+    await asyncio.sleep(5)
+    unisat_wallet_page = context.pages[-1]
+
+    await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[2]/div/div[2]').click()
+
+async def sign_with_wallet_fractal(unisat_page: Page, context: BrowserContext, account: AccountDTO):
+    # Логин через кошелек, клик sign
+    await unisat_page.locator('//*[@id="__next"]/div[1]/div[1]/div[3]/div').click()
+    await unisat_page.locator('//*[@id="__next"]/div[6]/div/div[3]/div[1]').click()
     await asyncio.sleep(5)
     unisat_wallet_page = context.pages[-1]
     # Пробуем разблокировать кошелек, скип если уже разблокирован
