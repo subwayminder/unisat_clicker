@@ -92,6 +92,11 @@ async def sign_tx(unisat_wallet_page: Page):
     # Кнопка подписать и оплатить в кошельке
     await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[3]/div/div[2]').click()
 
+@check_fractal_gas
+async def sign_fractal_tx(unisat_wallet_page: Page):
+    # Кнопка подписать и оплатить в кошельке
+    await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[3]/div/div[2]').click()
+
 @check_gas
 @retry
 async def ordinals_names(account: AccountDTO):
@@ -292,6 +297,12 @@ async def fractal_mint(account: AccountDTO):
             await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/label').first.click()
             await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div[8]/div').first.click()
 
+            # Скипаем еще один алерт если он есть
+            try:
+                await unisat_page.get_by_text('I have read and agreed to the risk warning').first.click(timeout=1000)
+            except:
+                pass
+
             # Клик на оплату
             await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div/div[9]/div[2]/div[2]/div/div/div[1]').click()
 
@@ -299,7 +310,7 @@ async def fractal_mint(account: AccountDTO):
             unisat_wallet_page = get_wallet_page(context)
             if (not TEST_RUN):
                 # Кнопка подписать и оплатить в кошельке
-                await sign_tx(unisat_wallet_page)
+                await sign_fractal_tx(unisat_wallet_page)
 
         except Exception as e:
             raise e
