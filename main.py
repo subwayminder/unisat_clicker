@@ -42,6 +42,8 @@ def choose_script():
     return result
 
 def main():
+    if sys.platform.startswith('win'):
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     logger.info(f"Start")
     if (not TEST_RUN):
         if input('Attention, this is not a test run, continue? (y=Yes, n=No) ') != 'y':
