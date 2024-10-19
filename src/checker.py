@@ -25,9 +25,9 @@ class Checker:
                     return await resp.json()
                 else:
                     raise RuntimeError(
-                        f'[{self.account.get()}] [{self.account.get('public_address')}] - ' 
+                        f"[{self.account.get()}] [{self.account.get('public_address')}] - " 
                         + url 
-                        + ' returns with ' 
+                        + " returns with " 
                         + resp.status
                     )
 
