@@ -13,7 +13,7 @@ async def open_profile(ap: Playwright, account: AccountDTO) -> BrowserContext:
     ads_api_response = requests.get(f"http://{ADS_API_URL}:{ADS_API_PORT}" + '/api/v1/browser/start?user_id=' + account.get('profile_id')).json()
     browser = await ap.chromium.connect_over_cdp(
         str(ads_api_response['data']['ws']['puppeteer'])
-            .replace(f"127.0.0.1:{ADS_API_PORT}", f"{ADS_API_URL}:{ADS_API_PORT}"), 
+            .replace(f"127.0.0.1", f"{ADS_API_URL}"), 
         slow_mo=int(SLOW_MODE_VALUE),
     )
     context = browser.contexts[0]
