@@ -13,7 +13,7 @@ async def open_profile(ap: Playwright, account: AccountDTO) -> BrowserContext:
     ads_api_response = requests.get(f"http://{ADS_API_URL}:{ADS_API_PORT}" + '/api/v1/browser/start?user_id=' + account.get('profile_id')).json()
     browser = await ap.chromium.connect_over_cdp(
         str(ads_api_response['data']['ws']['puppeteer'])
-            .replace(f"127.0.0.1", f"{ADS_API_URL}"), 
+            .replace("127.0.0.1", f"{ADS_API_URL}"), 
         slow_mo=int(SLOW_MODE_VALUE),
     )
     context = browser.contexts[0]
@@ -36,7 +36,7 @@ async def unisat_script(account: AccountDTO):
             await unisat_page.wait_for_load_state()
 
             # Клик далее по руне
-            next_button = unisat_page.locator('//*[@id="__next"]/div[3]/div/div[3]/div[2]/div[2]/div[5]/div[5]').first
+            next_button = unisat_page.locator('//*[@id="__next"]/div[4]/div/div[3]/div[2]/div[2]/div[5]/div[5]').first
             await asyncio.sleep(5)
             await next_button.click()
 
@@ -44,17 +44,17 @@ async def unisat_script(account: AccountDTO):
             await sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
 
             # Выбираем минимальный газ
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[3]/div[2]/div/div[5]/div[2]/div[1]').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[3]/div[2]/div/div[5]/div[2]/div[1]').click()
 
             # Кликаем customize и откручиваем сатоши слайдер до минимума
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[3]/div[2]/div/div[6]/div[1]/div[1]/span[2]').first.click()
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[3]/div[2]/div/div[6]/div[2]/div[2]/div[2]/input').first.fill('330')
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[3]/div[2]/div/div[6]/div[1]/div[1]/span[2]').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[3]/div[2]/div/div[6]/div[2]/div[2]/div[2]/input').first.fill('330')
 
             # Клик чекбокса
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[3]/div[2]/div/label/span[1]/input').check()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[3]/div[2]/div/label/span[1]/input').check()
 
             # Клейм
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[3]/div[2]/div/div[8]').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[3]/div[2]/div/div[8]').click()
 
             # Скипаем алерт
             # if (await unisat_page.query_selector('text="I have read and agreed to the risk warning"') is not None):
@@ -67,12 +67,12 @@ async def unisat_script(account: AccountDTO):
             await unisat_page.locator('//html/body/div[2]/div/div/div[2]/div/div/div/div/div/div/span[1]').click()
 
             # Клик по кнопке далее
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div[2]/div/div[4]/div/div').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div/div[4]/div/div').click()
             await unisat_page.wait_for_load_state()
             await asyncio.sleep(2)
 
             # Клик на оплату
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div[2]/div/div[9]/div[2]/div[2]/div/div/div[1]').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div/div[9]/div[2]/div[2]/div/div/div').click()
 
             # Снова получаем страницу кошелька
             unisat_wallet_page = context.pages[-1]
@@ -118,37 +118,34 @@ async def ordinals_names(account: AccountDTO):
             await sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
 
             # Выбираем имена на .unisat домене
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[3]/div[1]/div[2]/div').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[3]/div[1]/div/div/div[2]').click()
             await unisat_page.locator('//html/body/div[2]/div/div[2]/div/div/div/div/div[2]').click()
 
             # Генерируем случайный домен
             name = generate_string(size=random.randint(int(DOMAIN_LENGHT_FROM), int(DOMAIN_LENGHT_TO)))
 
             # Вставляем его в текстовое поле, нажимаем далее
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div/textarea').fill(name)
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div/div[3]').click()
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div/div[5]/div[2]').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div/textarea').fill(name)
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div/div[3]').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div/div[5]/div[2]').click()
 
-            # Выбираем эконом
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[5]/div[2]/div[1]').click()
-            await unisat_page.wait_for_load_state()
+            # Выбираем минимальный газ
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[5]/div[2]/div[1]').click()
 
             # Кликаем customize и откручиваем сатоши слайдер до минимума
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[6]/div[1]/div[1]/span[2]').first.click()
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[6]/div[2]/div[2]/div[2]/input').first.fill('330')
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[6]/div[1]/div[1]/span[2]').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[6]/div[2]/div[2]/div[2]/input').first.fill('330')
 
             # Клик по селекту
-            await asyncio.sleep(2)
-            await unisat_page.locator('//*[@id="rc-tabs-1-panel-single"]/div/div/span[1]').click()
+            await unisat_page.locator('//*[@id="rc-tabs-1-panel-single"]/div/div').click()
 
             # Клик по опции
-            await unisat_page.locator('//html/body/div[3]/div').click()
-            await asyncio.sleep(1)
+            await unisat_page.locator('//html/body/div[3]/div/div/div[2]/div/div/div/div/div/div/span[1]').click()
 
             # Нажимаем Submit & Pay
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[8]/div').click()
+            await unisat_page.get_by_text('Submit & Pay invoice').click()
             await unisat_page.wait_for_load_state()
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div[2]/div/div[9]/div[2]/div[2]/div/div/div[1]').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div/div[9]/div[2]/div[2]/div/div/div').click()
 
             # Снова получаем страницу кошелька
             unisat_wallet_page = context.pages[-1]
@@ -189,16 +186,17 @@ async def ordinals_bytes(account: AccountDTO):
             await sign_with_wallet(context=context, unisat_page=unisat_page, account=account)
 
             # Выбираем деплой 5 байт
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[1]/div[1]/div[4]/div[2]/div[1]').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[1]/div[1]/div[4]/div[2]/div[1]').click()
 
             # Заполняем инпут
-            await unisat_page.locator('//html/body/div/div[3]/div/div[4]/div[3]/div[2]/div[1]/div[2]/input').fill(generate_string(5))
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[2]/div[1]/div[2]/input').fill(generate_string(5))
 
             # Клик next
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[3]/div').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[3]/div/div').click()
             
             # Еще клик next
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div/div[4]/div[2]').click()
+            await asyncio.sleep(1)
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div/div[4]/div[2]').click()
 
             # Скипаем алерт если он появился
             try:
@@ -208,25 +206,25 @@ async def ordinals_bytes(account: AccountDTO):
                 pass
 
             # Клик по селекту
-            await unisat_page.locator('//*[@id="rc-tabs-1-panel-single"]/div/div/span[1]').click()
+            await unisat_page.locator('//*[@id="rc-tabs-1-panel-single"]/div/div').click()
 
             # Клик по опции
-            await unisat_page.locator('//html/body/div[2]/div/div/div[2]').click()
+            await unisat_page.locator('//html/body/div[2]/div/div/div[2]/div/div/div/div/div').click()
 
             # Выбираем эконом
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[5]/div[2]/div[1]').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[5]/div[2]/div[1]').click()
             await unisat_page.wait_for_load_state()
 
             # Кликаем customize и откручиваем сатоши слайдер до минимума
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[6]/div[1]/div[1]/span[2]').first.click()
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[6]/div[2]/div[2]/div[2]/input').first.fill('330')
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[6]/div[1]/div[1]/span[2]').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[6]/div[2]/div[2]/div[2]/input').first.fill('330')
 
             # Клик на сабмит
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div/div[4]/div[3]/div[8]/div/span').click()
+            await unisat_page.get_by_text('Submit & Pay invoice').click()
             await unisat_page.wait_for_load_state()
 
             # Клик на оплату
-            await unisat_page.locator('//*[@id="__next"]/div[3]/div[2]/div/div[9]/div[2]/div[2]/div/div').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div/div[9]/div[2]/div[2]/div/div/div').click()
 
             # Снова получаем страницу кошелька
             unisat_wallet_page = get_wallet_page(context)
@@ -367,8 +365,8 @@ async def wallet_login(unisat_page: Page, seed_phrase: List[str], password: str)
 
 async def sign_with_wallet(unisat_page: Page, context: BrowserContext, account: AccountDTO):
     # Логин через кошелек, клик sign
-    await unisat_page.locator('//*[@id="__next"]/div[1]/div[2]/div[3]').click()
-    await unisat_page.locator('//*[@id="__next"]/div[5]/div/div[3]/div[1]').click()
+    await unisat_page.locator('//*[@id="__next"]/div[1]/div[1]/div[3]/div').click()
+    await unisat_page.locator('//*[@id="__next"]/div[6]/div/div[3]/div[1]').click()
     await asyncio.sleep(5)
     unisat_wallet_page = context.pages[-1]
     # Пробуем разблокировать кошелек, скип если уже разблокирован
