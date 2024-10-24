@@ -5,13 +5,17 @@ import string
 from typing import List
 from src.gas_checker import check_gas, check_fractal_gas
 from src.retry import retry
-from settings import ADS_API_URL, SLOW_MODE_VALUE, DOMAIN_LENGHT_FROM, DOMAIN_LENGHT_TO, TEST_RUN
+from settings import ADS_API_URL, ADS_API_PORT, SLOW_MODE_VALUE, DOMAIN_LENGHT_FROM, DOMAIN_LENGHT_TO, TEST_RUN
 from playwright.async_api import async_playwright, Playwright, Page, BrowserContext
 from src.account import AccountDTO
 
 async def open_profile(ap: Playwright, account: AccountDTO) -> BrowserContext:
-    ads_api_response = requests.get(ADS_API_URL + '/api/v1/browser/start?user_id=' + account.get('profile_id')).json()
-    browser = await ap.chromium.connect_over_cdp(ads_api_response['data']['ws']['puppeteer'], slow_mo=int(SLOW_MODE_VALUE))
+    ads_api_response = requests.get(f"http://{ADS_API_URL}:{ADS_API_PORT}" + '/api/v1/browser/start?user_id=' + account.get('profile_id')).json()
+    browser = await ap.chromium.connect_over_cdp(
+        str(ads_api_response['data']['ws']['puppeteer'])
+            .replace(f"127.0.0.1:{ADS_API_PORT}", f"{ADS_API_URL}:{ADS_API_PORT}"), 
+        slow_mo=int(SLOW_MODE_VALUE),
+    )
     context = browser.contexts[0]
     return context
 

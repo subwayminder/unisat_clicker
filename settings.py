@@ -7,6 +7,7 @@ load_dotenv(dotenv_path)
 
 SLOW_MODE_VALUE = os.environ.get("SLOW_MODE_VALUE")
 ADS_API_URL = os.environ.get("ADS_API_URL")
+ADS_API_PORT = os.environ.get("ADS_API_PORT")
 TX_COUNT_MIN = os.environ.get("TX_COUNT_MIN")
 TX_COUNT_MAX = os.environ.get("TX_COUNT_MAX")
 ACCOUNT_LATENCY_MIN = int(os.environ.get("ACCOUNT_LATENCY_MIN"))
