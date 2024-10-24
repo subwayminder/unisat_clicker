@@ -84,7 +84,7 @@ async def unisat_script(account: AccountDTO):
             await asyncio.sleep(1)
             if ('unisat_page' in locals()):
                 await unisat_page.close()
-            requests.get(ADS_API_URL + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
+            requests.get(f"http://{ADS_API_URL}:{ADS_API_PORT}" + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
             account['tx_count'] -= 1
             await asyncio.sleep(1)
 
@@ -158,7 +158,7 @@ async def ordinals_names(account: AccountDTO):
 
             if ('unisat_page' in locals()):
                 await unisat_page.close()
-            requests.get(ADS_API_URL + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
+            requests.get(f"http://{ADS_API_URL}:{ADS_API_PORT}" + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
             account['tx_count'] -= 1
             await asyncio.sleep(1)
 
@@ -169,7 +169,7 @@ async def ordinals_names(account: AccountDTO):
             await asyncio.sleep(1)
             if ('unisat_page' in locals()):
                 await unisat_page.close()
-            requests.get(ADS_API_URL + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
+            requests.get(f"http://{ADS_API_URL}:{ADS_API_PORT}" + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
             account['tx_count'] -= 1
             await asyncio.sleep(1)
     
@@ -241,7 +241,7 @@ async def ordinals_bytes(account: AccountDTO):
             await asyncio.sleep(1)
             if ('unisat_page' in locals()):
                 await unisat_page.close()
-            requests.get(ADS_API_URL + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
+            requests.get(f"http://{ADS_API_URL}:{ADS_API_PORT}" + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
             account['tx_count'] -= 1
             await asyncio.sleep(1)
 
@@ -323,7 +323,7 @@ async def fractal_mint(account: AccountDTO):
             await asyncio.sleep(1)
             if ('unisat_page' in locals()):
                 await unisat_page.close()
-            requests.get(ADS_API_URL + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
+            requests.get(f"http://{ADS_API_URL}:{ADS_API_PORT}" + '/api/v1/browser/stop?user_id=' + account.get('profile_id')).json()
             account['tx_count'] -= 1
             await asyncio.sleep(1)
 
