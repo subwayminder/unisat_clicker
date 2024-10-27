@@ -279,9 +279,10 @@ async def fractal_mint(account: AccountDTO):
             # await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div[3]/div/div').first.click()
             await unisat_page.get_by_text('Next').first.click()
             await unisat_page.get_by_text('Next').first.click()
-
+            
+            await asyncio.sleep(1)
             # Скипаем алерт если он появился
-            skip_alert(unisat_page, 1000)
+            await skip_alert(unisat_page, 1000)
 
             # Клик по селекту
             await unisat_page.locator('//*[@id="rc-tabs-1-panel-single"]/div/div/span[1]').first.click()
@@ -363,8 +364,8 @@ async def wallet_login(unisat_page: Page, seed_phrase: List[str], password: str)
 
 async def skip_alert(unisat_page: Page, timeout: int):
     try:
-        await unisat_page.get_by_text('#__next > div.main-container.inscribe.inscribe-new.gap16.mt16 > div > div.mt-16.radius20.border-02.linear-gradient-container > div.block1 > div.mask > div > div.mt8.self-start > label').first.click(timeout)
-        await unisat_page.get_by_text("#__next > div.main-container.inscribe.inscribe-new.gap16.mt16 > div > div.mt-16.radius20.border-02.linear-gradient-container > div.block1 > div.mask > div > div.button.mt24").first.click(timeout)
+        await unisat_page.get_by_text('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[2]/div/div[4]/label/span[1]/input').first.check(timeout=timeout)
+        await unisat_page.get_by_text('//*[@id="__next"]/div[4]/div/div[4]/div[3]/div[2]/div/div[5]').first.click(timeout)
     except:
         pass
 
