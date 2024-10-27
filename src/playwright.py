@@ -72,7 +72,7 @@ async def unisat_script(account: AccountDTO):
             await asyncio.sleep(2)
 
             # Клик на оплату
-            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div/div[9]/div[2]/div[2]/div/div/div').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div/div[9]/div[2]/div[2]/div/div/div').first.click()
 
             # Снова получаем страницу кошелька
             unisat_wallet_page = context.pages[-1]
@@ -145,7 +145,7 @@ async def ordinals_names(account: AccountDTO):
             # Нажимаем Submit & Pay
             await unisat_page.get_by_text('Submit & Pay invoice').click()
             await unisat_page.wait_for_load_state()
-            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div/div[9]/div[2]/div[2]/div/div/div').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div/div[9]/div[2]/div[2]/div/div/div').first.click()
 
             # Снова получаем страницу кошелька
             unisat_wallet_page = context.pages[-1]
@@ -224,7 +224,7 @@ async def ordinals_bytes(account: AccountDTO):
             await unisat_page.wait_for_load_state()
 
             # Клик на оплату
-            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div/div[9]/div[2]/div[2]/div/div/div').click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div/div[9]/div[2]/div[2]/div/div/div').first.click()
 
             # Снова получаем страницу кошелька
             unisat_wallet_page = get_wallet_page(context)
