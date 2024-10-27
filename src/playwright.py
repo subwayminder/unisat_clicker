@@ -305,7 +305,7 @@ async def fractal_mint(account: AccountDTO):
                 pass
             await asyncio.sleep(1)
             # Клик на оплату
-            await unisat_page.get_by_text('Pay with Wallet').first.click()
+            await unisat_page.locator('#__next > div.main-container.inscribe.inscribe-new.gap16.mt16 > div.mask > div > div.ant-collapse.ant-collapse-icon-position-start.pay-list.css-18qmq30 > div.ant-collapse-item.ant-collapse-item-active > div.ant-collapse-content.ant-collapse-content-active > div > div > div').first.click()
 
             # Снова получаем страницу кошелька
             unisat_wallet_page = get_wallet_page(context)
