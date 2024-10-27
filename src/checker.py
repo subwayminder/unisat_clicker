@@ -6,6 +6,8 @@ import os
 import time
 import asyncio
 import aiohttp
+import certifi
+import ssl
 from loguru import logger
 from concurrent.futures import ProcessPoolExecutor
 from settings import QUANTITY_THREADS
@@ -19,8 +21,9 @@ class Checker:
         pass
 
     async def get_address_info(self, url: str):
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
         async with aiohttp.ClientSession() as session:
-            async with session.get(url=url, proxy=f"http://{self.account.get('proxy')}") as resp:
+            async with session.get(url=url, proxy=f"http://{self.account.get('proxy')}", ssl=ssl_context) as resp:
                 if (resp.status == 200):
                     return await resp.json()
                 else:
@@ -65,7 +68,7 @@ class Checker:
     
 def start_checker():
     url_price = 'https://mempool.space/api/v1/prices'
-    r_price = requests.get(url=url_price)
+    r_price = requests.get(url=url_price, verify=certifi.where())
     if r_price.status_code != 200:
         raise RuntimeError
     body_price = r_price.json()
