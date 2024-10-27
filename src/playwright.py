@@ -283,6 +283,8 @@ async def fractal_mint(account: AccountDTO):
             # Скипаем алерт если он появился
             try:
                 await unisat_page.get_by_text('I have read and agreed to the risk warning').first.click(timeout=1000)
+                await unisat_page.get_by_text("Don't remind anymore").first.click(timeout=1000)
+                await unisat_page.get_by_text("Understood").first.click(timeout=1000)
             except:
                 pass
 
