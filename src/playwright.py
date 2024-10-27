@@ -281,12 +281,7 @@ async def fractal_mint(account: AccountDTO):
             await unisat_page.get_by_text('Next').first.click()
 
             # Скипаем алерт если он появился
-            try:
-                await unisat_page.get_by_text('I have read and agreed to the risk warning').first.click(timeout=1000)
-                await unisat_page.get_by_text("Don't remind anymore").first.click(timeout=1000)
-                await unisat_page.get_by_text("Understood").first.click(timeout=1000)
-            except:
-                pass
+            skip_alert(unisat_page, 1000)
 
             # Клик по селекту
             await unisat_page.locator('//*[@id="rc-tabs-1-panel-single"]/div/div/span[1]').first.click()
@@ -365,6 +360,20 @@ async def wallet_login(unisat_page: Page, seed_phrase: List[str], password: str)
     await unisat_page.locator('//*[@id="root"]/div[1]/div/div[2]/div/div[1]/div[1]').first.click()
     # Выбор Taproot
     await unisat_page.locator('//*[@id="root"]/div[1]/div/div[2]/div/div[3]/div').first.click()
+
+async def skip_alert(unisat_page: Page, timeout: int):
+    try:
+        await unisat_page.get_by_text('#__next > div.main-container.inscribe.inscribe-new.gap16.mt16 > div > div.mt-16.radius20.border-02.linear-gradient-container > div.block1 > div.mask > div > div.mt8.self-start > label').first.click(timeout)
+        await unisat_page.get_by_text("#__next > div.main-container.inscribe.inscribe-new.gap16.mt16 > div > div.mt-16.radius20.border-02.linear-gradient-container > div.block1 > div.mask > div > div.button.mt24").first.click(timeout)
+    except:
+        pass
+
+async def skip_remind_alert(unisat_page: Page, timeout: int):
+    try:
+        await unisat_page.get_by_text("Don't remind anymore").first.click(timeout)
+    except:
+        pass
+    
 
 async def sign_with_wallet(unisat_page: Page, context: BrowserContext, account: AccountDTO):
     # Логин через кошелек, клик sign
