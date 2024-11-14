@@ -3,7 +3,7 @@ import random
 from src.gas_checker import check_gas
 from src.retry import retry
 from settings import TX_COUNT_MIN, TX_COUNT_MAX
-from typing import Union, Self, TypedDict, List
+from typing import Union, TypedDict, List
 
 class AccountDTO(TypedDict):
    number: int
@@ -15,7 +15,7 @@ class AccountDTO(TypedDict):
    withdraw_amount: str
    usd_price: Union[int, None]
 
-def load_accounts(include_inactive: bool = False, current_usd_price = 0) -> List[Self]:
+def load_accounts(include_inactive: bool = False, current_usd_price = 0):
    accounts = []
    with open('import.csv', newline='') as csvfile:
       reader = csv.reader(csvfile, delimiter=';')
