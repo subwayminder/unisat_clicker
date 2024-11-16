@@ -256,7 +256,7 @@ async def fractal_mint(account: AccountDTO):
 
             # Переход на страницу случайной руны
             await unisat_page.locator('//*[@id="__next"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/label[2]/div').first.click()
-            await unisat_page.locator('//*[@id="__next"]/div[2]/div/div/div/div/div[3]/div/div/div[4]').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[2]/div/div/div/div/div[3]/div/div/div/div/div/div/table/thead/tr/th[4]/div').first.click()
             await asyncio.sleep(5)
             mint_collection = await unisat_page.locator("span:has-text('Mint')").all()
             count = await unisat_page.locator("span:has-text('Mint')").count()
