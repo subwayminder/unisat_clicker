@@ -272,7 +272,7 @@ async def fractal_mint(account: AccountDTO):
 
             # Ставим repeat 50
             # repeat_rune_input = unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div[2]/div[4]/div[2]/input').first
-            repeat_rune_input = unisat_page.locator('#__next > div.main-container.inscribe.inscribe-new.gap16.mt16 > div > div.mt-16.radius20.border-02.linear-gradient-container > div.block1 > div.brc-input-container > div:nth-child(4) > div.ant-col.ant-col-xs-6.ant-col-sm-3.css-18qmq30 > input').first
+            repeat_rune_input = unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[2]/div[4]/div[1]/input').first
             await repeat_rune_input.fill('50')
 
             # Жмем далее дважды
@@ -291,11 +291,11 @@ async def fractal_mint(account: AccountDTO):
             await unisat_page.locator('//html/body/div[2]/div').first.click()
 
             # Выбираем эконом
-            await unisat_page.locator('#__next > div.main-container.inscribe.inscribe-new.gap16.mt16 > div > div.mt-16.radius20.border-02.linear-gradient-container > div.block1 > div.fee-choose.self-stretch > div.fee-list > div:nth-child(1)').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[3]/div[2]/div[1]').first.click()
             await unisat_page.wait_for_load_state()
 
             # Подтверждаем минт
-            await unisat_page.locator('#__next > div.main-container.inscribe.inscribe-new.gap16.mt16 > div > div.mt-16.radius20.border-02.linear-gradient-container > div.block1 > label').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/label/span[1]/input').first.check()
             await unisat_page.get_by_text('Submit & Pay invoice').first.click()
 
             # Скипаем еще один алерт если он есть
@@ -305,7 +305,7 @@ async def fractal_mint(account: AccountDTO):
                 pass
             await asyncio.sleep(1)
             # Клик на оплату
-            await unisat_page.locator('#__next > div.main-container.inscribe.inscribe-new.gap16.mt16 > div.mask > div > div.ant-collapse.ant-collapse-icon-position-start.pay-list.css-18qmq30 > div.ant-collapse-item.ant-collapse-item-active > div.ant-collapse-content.ant-collapse-content-active > div > div > div').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[4]/div[4]/div/div[9]/div[2]/div[2]/div/div/div/span').first.click()
 
             # Снова получаем страницу кошелька
             unisat_wallet_page = get_wallet_page(context)

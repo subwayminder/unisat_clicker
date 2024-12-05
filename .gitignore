@@ -7,3 +7,5 @@ __pycache__/
 *.log
 build/
 dist/
+my_project
+my_project.spec
