@@ -398,8 +398,6 @@ async def sign_with_wallet(unisat_page: Page, context: BrowserContext, account: 
     await asyncio.sleep(5)
     unisat_wallet_page = context.pages[-1]
 
-    await unisat_wallet_page.locator('//*[@id="root"]/div[1]/div/div[2]/div/div[2]').click()
-
 async def sign_with_wallet_fractal(unisat_page: Page, context: BrowserContext, account: AccountDTO):
     # Логин через кошелек, клик sign
     await unisat_page.locator('//*[@id="__next"]/div[1]/div[1]/div[3]/div').click()
