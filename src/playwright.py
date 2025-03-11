@@ -365,7 +365,8 @@ async def wallet_login(unisat_page: Page, seed_phrase: List[str], password: str)
 async def skip_alert(unisat_page: Page, timeout: int):
     try:
         await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[2]/div/div[3]/label/span[1]/input').first.check(timeout=timeout)
-        await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[2]/div/div[4]').first.click(timeout)
+        # await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[2]/div/div[4]').first.click(timeout)
+        await unisat_page.get_by_text('Understood')
     except:
         pass
 
