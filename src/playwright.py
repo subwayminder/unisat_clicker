@@ -255,8 +255,8 @@ async def fractal_mint(account: AccountDTO):
             await unisat_page.wait_for_load_state()
 
             # Переход на страницу случайной руны
-            await unisat_page.locator('//*[@id="__next"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/label[2]/div').first.click()
-            await unisat_page.locator('//*[@id="__next"]/div[2]/div/div/div/div/div[3]/div/div/div/div/div/div/table/thead/tr/th[4]/div').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[5]/div/div/div/div/div[2]/div[2]/div[2]/div/label[2]/div').first.click()
+            await unisat_page.locator('//*[@id="__next"]/div[5]/div/div/div/div/div[3]/div/div/div/div/div/div/table/thead/tr/th[4]/div').first.click()
             await asyncio.sleep(5)
             mint_collection = await unisat_page.locator("span:has-text('Mint')").all()
             count = await unisat_page.locator("span:has-text('Mint')").count()
@@ -273,7 +273,7 @@ async def fractal_mint(account: AccountDTO):
             # Ставим repeat 50
             # repeat_rune_input = unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div[2]/div[4]/div[2]/input').first
             repeat_rune_input = unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[2]/div[4]/div[1]/input').first
-            await repeat_rune_input.fill('50')
+            await repeat_rune_input.fill('100')
 
             # Жмем далее дважды
             # await unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div[3]/div/div').first.click()
