@@ -27,7 +27,7 @@ eth-utils==4.1.1
 eth_abi==5.1.0
 fastecdsa==2.3.2
 frozenlist==1.4.1
-greenlet==3.0.3
+greenlet==3.1.1
 hdwallet==2.2.1
 hexbytes==0.3.1
 idna==3.7
@@ -42,14 +42,14 @@ multidict==6.0.5
 numpy==2.1.0
 packaging==24.1
 parsimonious==0.10.0
-playwright==1.45.1
+playwright==1.50.0
 pluggy==1.5.0
 prompt-toolkit==3.0.36
 protobuf==5.27.2
 pycares==4.4.0
 pycparser==2.22
 pycryptodome==3.20.0
-pyee==11.1.0
+pyee==12.1.1
 pyinstaller==6.11.0
 pyinstaller-hooks-contrib==2024.9
 pytest==8.3.2
@@ -59,7 +59,7 @@ pytest-playwright==0.5.1
 python-bitcoinrpc==1.0
 python-dotenv==1.0.1
 python-slugify==8.0.4
-pyunormalize==15.1.0
+pyunormalize==16.0.0
 questionary==2.0.1
 referencing==0.35.1
 regex==2024.7.24

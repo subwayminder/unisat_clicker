@@ -291,7 +291,8 @@ async def fractal_mint(account: AccountDTO):
             await unisat_page.locator('//html/body/div[2]/div').first.click()
 
             # Выбираем эконом
-            await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[3]/div[2]/div[1]').first.click()
+            # await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[4]/div[2]/div[1]').first.click()
+            await unisat_page.locator('.fee-item.\\30').first.click()
             await unisat_page.wait_for_load_state()
 
             # Подтверждаем минт
@@ -362,11 +363,19 @@ async def wallet_login(unisat_page: Page, seed_phrase: List[str], password: str)
     # Выбор Taproot
     await unisat_page.locator('//*[@id="root"]/div[1]/div/div[2]/div/div[3]/div').first.click()
 
+async def click_fractal_mint(unisat_page: Page):
+    mint_collection = await unisat_page.locator("span:has-text('Mint')").all()
+    count = await unisat_page.locator("span:has-text('Mint')").count()
+    index = random.randint(0, count - 1)
+    if (mint_collection[index].is_disabled()):
+        click_fractal_mint(unisat_page)
+    await mint_collection[index].click()
+
 async def skip_alert(unisat_page: Page, timeout: int):
     try:
         await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[2]/div/div[3]/label/span[1]/input').first.check(timeout=timeout)
         # await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[2]/div/div[4]').first.click(timeout)
-        await unisat_page.get_by_text('Understood')
+        await unisat_page.get_by_text('Understood').click(timeout=timeout)
     except:
         pass
 
