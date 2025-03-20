@@ -243,7 +243,7 @@ async def ordinals_bytes(account: AccountDTO):
             account['tx_count'] -= 1
             await asyncio.sleep(1)
 
-@check_fractal_gas
+# @check_fractal_gas
 @retry
 async def fractal_mint(account: AccountDTO):
     async with async_playwright() as ap:
@@ -255,13 +255,10 @@ async def fractal_mint(account: AccountDTO):
             await unisat_page.wait_for_load_state()
 
             # Переход на страницу случайной руны
-            await unisat_page.locator('//*[@id="__next"]/div[5]/div/div/div/div/div[2]/div[2]/div[2]/div/label[2]/div').first.click()
-            await unisat_page.locator('//*[@id="__next"]/div[5]/div/div/div/div/div[3]/div/div/div/div/div/div/table/thead/tr/th[4]/div').first.click()
+            await unisat_page.locator('.ant-segmented-item-label[title="In-Progress"][role="option"]').first.click()
+            await unisat_page.locator('.flex-row-end.cursor-pointer:has-text("Holders")').first.click()
             await asyncio.sleep(5)
-            mint_collection = await unisat_page.locator("span:has-text('Mint')").all()
-            count = await unisat_page.locator("span:has-text('Mint')").count()
-            index = random.randint(0, count - 1)
-            await mint_collection[index].click()
+            await click_fractal_mint(unisat_page)
             await unisat_page.wait_for_load_state()
 
 
@@ -270,9 +267,8 @@ async def fractal_mint(account: AccountDTO):
             # Логин через кошелек, клик sign
             await sign_with_wallet_fractal(context=context, unisat_page=unisat_page, account=account)
 
-            # Ставим repeat 50
-            # repeat_rune_input = unisat_page.locator('//*[@id="__next"]/div[4]/div[2]/div[3]/div[3]/div[2]/div[4]/div[2]/input').first
-            repeat_rune_input = unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[2]/div[4]/div[1]/input').first
+            # Ставим repeat 100
+            repeat_rune_input = unisat_page.locator('input[type="text"][inputmode="decimal"][step="0"].ant-input.ant-input-lg.css-18qmq30.ant-input-outlined').first
             await repeat_rune_input.fill('100')
 
             # Жмем далее дважды
@@ -284,19 +280,15 @@ async def fractal_mint(account: AccountDTO):
             # Скипаем алерт если он появился
             await skip_alert(unisat_page, 1000)
 
-            # Клик по селекту
-            await unisat_page.locator('//*[@id="rc-tabs-1-panel-single"]/div/div/span[1]').first.click()
-
-            # Клик по опции
-            await unisat_page.locator('//html/body/div[2]/div').first.click()
+            # Вставляем адрес
+            await unisat_page.locator('input[type="search"].ant-select-selection-search-input').first.fill(account.get('public_address'))
 
             # Выбираем эконом
-            # await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/div[4]/div[2]/div[1]').first.click()
             await unisat_page.locator('.fee-item.\\30').first.click()
             await unisat_page.wait_for_load_state()
 
             # Подтверждаем минт
-            await unisat_page.locator('//*[@id="__next"]/div[4]/div[3]/div[1]/div[2]/div/div[4]/label/span[1]/input').first.check()
+            await unisat_page.locator('input[type="checkbox"].ant-checkbox-input').first.check()
             await unisat_page.get_by_text('Submit & Pay invoice').first.click()
 
             # Скипаем еще один алерт если он есть
@@ -306,7 +298,8 @@ async def fractal_mint(account: AccountDTO):
                 pass
             await asyncio.sleep(1)
             # Клик на оплату
-            await unisat_page.locator('//*[@id="__next"]/div[4]/div[4]/div/div[9]/div[2]/div[2]/div/div/div/span').first.click()
+            pay_with_wallet_elements = await unisat_page.locator("span:has-text('Pay with Wallet')").all()
+            await pay_with_wallet_elements[1].locator('..').first.click()
 
             # Снова получаем страницу кошелька
             unisat_wallet_page = get_wallet_page(context)
@@ -367,8 +360,8 @@ async def click_fractal_mint(unisat_page: Page):
     mint_collection = await unisat_page.locator("span:has-text('Mint')").all()
     count = await unisat_page.locator("span:has-text('Mint')").count()
     index = random.randint(0, count - 1)
-    if (mint_collection[index].is_disabled()):
-        click_fractal_mint(unisat_page)
+    if (await mint_collection[index].is_disabled()):
+        await click_fractal_mint(unisat_page)
     await mint_collection[index].click()
 
 async def skip_alert(unisat_page: Page, timeout: int):
