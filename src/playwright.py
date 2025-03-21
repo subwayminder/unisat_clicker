@@ -243,7 +243,7 @@ async def ordinals_bytes(account: AccountDTO):
             account['tx_count'] -= 1
             await asyncio.sleep(1)
 
-# @check_fractal_gas
+@check_fractal_gas
 @retry
 async def fractal_mint(account: AccountDTO):
     async with async_playwright() as ap:
