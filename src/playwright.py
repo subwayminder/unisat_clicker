@@ -261,14 +261,15 @@ async def fractal_mint(account: AccountDTO):
             await click_fractal_mint(unisat_page)
             await unisat_page.wait_for_load_state()
 
-
-            # await unisat_page.goto('https://fractal.unisat.io/inscribe?tick=' + random_rune['ticker'])
+            await asyncio.sleep(3)
+            await close_all_pages(context)
+            unisat_page = context.pages[-1]
 
             # Логин через кошелек, клик sign
             await sign_with_wallet_fractal(context=context, unisat_page=unisat_page, account=account)
 
             # Ставим repeat 100
-            repeat_rune_input = unisat_page.locator('input[type="text"][inputmode="decimal"][step="0"].ant-input.ant-input-lg.css-18qmq30.ant-input-outlined').first
+            repeat_rune_input = unisat_page.locator('input[type="text"][inputmode="decimal"][step="0"][value="1"]').first
             await repeat_rune_input.fill('100')
 
             # Жмем далее дважды
@@ -403,8 +404,8 @@ async def sign_with_wallet(unisat_page: Page, context: BrowserContext, account: 
 
 async def sign_with_wallet_fractal(unisat_page: Page, context: BrowserContext, account: AccountDTO):
     # Логин через кошелек, клик sign
-    await unisat_page.locator('//*[@id="__next"]/div[1]/div[1]/div[3]/div').click()
-    await unisat_page.locator('//*[@id="__next"]/div[6]/div/div[3]/div[1]').click()
+    await unisat_page.locator('.button.border-btn:has-text("Connect")').first.click()
+    await unisat_page.locator('.font16:has-text("UniSat Wallet")').locator('..').locator('..').first.click()
     await asyncio.sleep(5)
     unisat_wallet_page = context.pages[-1]
     # Пробуем разблокировать кошелек, скип если уже разблокирован
@@ -433,3 +434,8 @@ def get_wallet_page(context: BrowserContext):
     while unisat_wallet_page == None:
         unisat_wallet_page = context.pages[-1]
     return unisat_wallet_page
+
+async def close_all_pages(context: BrowserContext):
+    pages = context.pages
+    for page in pages[:-1]:
+        await page.close()
